@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>luna recorder — visitor survey</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Inter:wght@400;500;600&display=swap');
+
+  :root{
+    --night: #171733;
+    --night-deep: #100f24;
+    --gold: #d9b667;
+    --gold-dim: #9c895c;
+    --coral: #e2725b;
+    --teal: #2a9d8f;
+    --amber: #e9a23b;
+    --purple: #8a6bab;
+    --paper: #f3ede1;
+    --paper-dim: #d9d0bd;
+  }
+
+  *{box-sizing:border-box;}
+
+  body{
+    margin:0;
+    min-height:100vh;
+    background:
+      radial-gradient(circle at 50% -10%, #23234a 0%, var(--night) 45%, var(--night-deep) 100%);
+    font-family:'Inter',sans-serif;
+    color:var(--paper);
+    display:flex;
+    justify-content:center;
+    padding:32px 18px 60px;
+  }
+
+  .card{
+    width:100%;
+    max-width:440px;
+  }
+
+  header{
+    text-align:center;
+    margin-bottom:28px;
+  }
+
+  .moon{
+    width:56px;
+    height:56px;
+    margin:0 auto 14px;
+    position:relative;
+  }
+  .moon svg{width:100%;height:100%;display:block;}
+
+  h1{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size:28px;
+    letter-spacing:0.02em;
+    margin:0 0 6px;
+    color:var(--paper);
+  }
+  .sub{
+    font-size:13px;
+    color:var(--gold-dim);
+    letter-spacing:0.04em;
+    text-transform:uppercase;
+  }
+
+  .progress{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin:22px 0 30px;
+  }
+  .phase-dot{
+    width:9px;height:9px;border-radius:50%;
+    background:rgba(255,255,255,0.15);
+    transition:background .3s ease, box-shadow .3s ease;
+  }
+  .phase-dot.active{
+    background:var(--gold);
+    box-shadow:0 0 8px var(--gold);
+  }
+  .phase-dot.done{
+    background:var(--gold-dim);
+  }
+
+  .panel{
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(217,182,103,0.18);
+    border-radius:2px;
+    padding:26px 22px;
+    position:relative;
+  }
+  .panel::before{
+    content:"";
+    position:absolute;
+    top:8px;left:8px;right:8px;bottom:8px;
+    border:1px solid rgba(217,182,103,0.1);
+    pointer-events:none;
+  }
+
+  .q-eyebrow{
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    font-size:14px;
+    color:var(--gold-dim);
+    margin-bottom:8px;
+  }
+
+  .q-text{
+    font-size:18px;
+    line-height:1.45;
+    margin:0 0 20px;
+    color:var(--paper);
+  }
+
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+  }
+
+  .opt{
+    display:block;
+    width:100%;
+    text-align:left;
+    padding:13px 16px;
+    background:transparent;
+    border:1px solid rgba(243,237,225,0.25);
+    color:var(--paper);
+    font-family:'Inter',sans-serif;
+    font-size:15px;
+    border-radius:1px;
+    cursor:pointer;
+    transition:border-color .2s, background .2s;
+  }
+  .opt:hover{border-color:var(--gold);}
+  .opt.selected{
+    border-color:var(--gold);
+    background:rgba(217,182,103,0.1);
+  }
+
+  .nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-top:26px;
+  }
+
+  .btn{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    letter-spacing:0.06em;
+    text-transform:uppercase;
+    background:none;
+    border:none;
+    color:var(--gold-dim);
+    cursor:pointer;
+    padding:8px 4px;
+  }
+  .btn:hover{color:var(--gold);}
+  .btn:disabled{opacity:0.25;cursor:default;}
+
+  .btn-primary{
+    background:var(--gold);
+    color:var(--night-deep);
+    padding:10px 22px;
+    font-weight:600;
+    border-radius:1px;
+  }
+  .btn-primary:hover{background:#e8c883;color:var(--night-deep);}
+  .btn-primary:disabled{background:rgba(217,182,103,0.25);color:rgba(16,15,36,0.5);}
+
+  .done-screen{
+    text-align:center;
+    padding:20px 6px;
+  }
+  .done-screen .moon{width:64px;height:64px;}
+  .done-screen h2{
+    font-family:'Cormorant Garamond',serif;
+    font-weight:600;
+    font-size:22px;
+    margin:14px 0 8px;
+  }
+  .done-screen p{
+    font-size:14px;
+    color:var(--paper-dim);
+    line-height:1.6;
+  }
+
+  .footer-note{
+    text-align:center;
+    font-size:11px;
+    color:rgba(217,182,103,0.4);
+    margin-top:22px;
+    letter-spacing:0.03em;
+  }
+
+  .error-msg{
+    font-size:12px;
+    color:var(--coral);
+    margin-top:10px;
+    min-height:16px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none !important;}
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <header>
+    <div class="moon" id="headerMoon"></div>
+    <h1>luna recorder</h1>
+    <div class="sub">visitor survey</div>
+  </header>
+
+  <div class="progress" id="progressDots">
+    <span class="phase-dot" data-i="0"></span>
+    <span class="phase-dot" data-i="1"></span>
+    <span class="phase-dot" data-i="2"></span>
+  </div>
+
+  <div class="panel" id="panel"></div>
+
+  <div class="footer-note">anonymous &middot; no personal data collected &middot; part of a UCL CASA dissertation</div>
+</div>
+
+<script>
+const questions = [
+  {
+    key: "gender",
+    eyebrow: "01 — first quarter",
+    text: "How do you describe your gender?",
+    options: ["Female", "Male", "Non-binary", "Prefer not to say"]
+  },
+  {
+    key: "ageRange",
+    eyebrow: "02 — full moon",
+    text: "What is your age range?",
+    options: ["Under 18", "18–24", "25–34", "35–44", "45–54", "55+"]
+  },
+  {
+    key: "understanding",
+    eyebrow: "03 — last quarter",
+    text: "Did this display help better your understanding of the relationship between the menstrual cycle and sleep?",
+    options: ["Yes, clearly", "Somewhat", "Not really", "I already understood this"]
+  }
+];
+
+let current = 0;
+const answers = {};
+
+function moonSVG(fraction){
+  // fraction 0..1 of illumination, simple crescent-to-full rendering
+  const r = 24;
+  const cx = 28, cy = 28;
+  let inner;
+  if(fraction <= 0.5){
+    const rx = r * (1 - fraction*2);
+    inner = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${r}" fill="var(--night-deep)"/>`;
+  } else {
+    const rx = r * ((fraction-0.5)*2);
+    inner = `<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${r}" fill="var(--gold)"/>`;
+  }
+  return `<svg viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--night-deep)" stroke="var(--gold-dim)" stroke-width="1"/>
+    <circle cx="${cx}" cy="${cy}" r="${r}" fill="var(--gold)" opacity="${fraction>0.5?1:0}"/>
+    ${inner}
+  </svg>`;
+}
+
+function updateHeaderMoon(){
+  const frac = (current+1) / (questions.length+1);
+  document.getElementById('headerMoon').innerHTML = moonSVG(frac);
+}
+
+function updateDots(){
+  document.querySelectorAll('.phase-dot').forEach((d,i)=>{
+    d.classList.remove('active','done');
+    if(i < current) d.classList.add('done');
+    if(i === current) d.classList.add('active');
+  });
+}
+
+function renderQuestion(){
+  updateHeaderMoon();
+  updateDots();
+  const q = questions[current];
+  const panel = document.getElementById('panel');
+  panel.innerHTML = `
+    <div class="q-eyebrow">${q.eyebrow}</div>
+    <p class="q-text">${q.text}</p>
+    <div class="options" id="optionsWrap">
+      ${q.options.map(o => `<button class="opt" data-val="${o}">${o}</button>`).join('')}
+    </div>
+    <div class="error-msg" id="errMsg"></div>
+    <div class="nav">
+      <button class="btn" id="backBtn" ${current===0 ? 'disabled' : ''}>Back</button>
+      <button class="btn btn-primary" id="nextBtn">${current === questions.length-1 ? 'Submit' : 'Next'}</button>
+    </div>
+  `;
+
+  if(answers[q.key]){
+    panel.querySelectorAll('.opt').forEach(btn=>{
+      if(btn.dataset.val === answers[q.key]) btn.classList.add('selected');
+    });
+  }
+
+  panel.querySelectorAll('.opt').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      panel.querySelectorAll('.opt').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      answers[q.key] = btn.dataset.val;
+      document.getElementById('errMsg').textContent = '';
+    });
+  });
+
+  document.getElementById('backBtn').addEventListener('click', ()=>{
+    if(current > 0){ current--; renderQuestion(); }
+  });
+
+  document.getElementById('nextBtn').addEventListener('click', async ()=>{
+    if(!answers[q.key]){
+      document.getElementById('errMsg').textContent = 'Please select an option to continue.';
+      return;
+    }
+    if(current < questions.length - 1){
+      current++;
+      renderQuestion();
+    } else {
+      await submitSurvey();
+    }
+  });
+}
+
+async function submitSurvey(){
+  const panel = document.getElementById('panel');
+  const nextBtn = document.getElementById('nextBtn');
+  nextBtn.disabled = true;
+  nextBtn.textContent = 'Submitting…';
+
+  const entry = {
+    ...answers,
+    submittedAt: new Date().toISOString()
+  };
+  const id = 'response:' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+
+  try{
+    await window.storage.set(id, JSON.stringify(entry), true);
+    showDone();
+  }catch(e){
+    document.getElementById('errMsg').textContent = 'Something went wrong submitting — please try again.';
+    nextBtn.disabled = false;
+    nextBtn.textContent = 'Submit';
+  }
+}
+
+function showDone(){
+  document.getElementById('progressDots').style.display = 'none';
+  document.getElementById('headerMoon').innerHTML = moonSVG(1);
+  document.getElementById('panel').innerHTML = `
+    <div class="done-screen">
+      <h2>Thank you</h2>
+      <p>Your response has been recorded anonymously.<br>Enjoy the rest of the exhibition.</p>
+    </div>
+  `;
+}
+
+renderQuestion();
+</script>
+
+</body>
+</html>
