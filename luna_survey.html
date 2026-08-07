@@ -231,6 +231,17 @@
 </div>
 
 <script>
+/* ============================================================
+   GOOGLE FORM CONFIG — paste your four values here.
+   From your pre-filled link:
+   https://docs.google.com/forms/d/e/FORM_ID/viewform?usp=pp_url&entry.NNN=AAA&entry.NNN=BBB&entry.NNN=CCC
+   ============================================================ */
+const GOOGLE_FORM_ID = "1FAIpQLSdowr9y9eXur1-dyG0W0fIAGCu83ybB8OV0U3g5xAx1UMJWzw";
+const ENTRY_GENDER        = "entry.1744215337";
+const ENTRY_AGE_RANGE     = "entry.1414369582";
+const ENTRY_UNDERSTANDING = "entry.1618010815";
+/* ============================================================ */
+
 const questions = [
   {
     key: "gender",
@@ -339,19 +350,20 @@ function renderQuestion(){
 }
 
 async function submitSurvey(){
-  const panel = document.getElementById('panel');
   const nextBtn = document.getElementById('nextBtn');
   nextBtn.disabled = true;
   nextBtn.textContent = 'Submitting…';
 
-  const entry = {
-    ...answers,
-    submittedAt: new Date().toISOString()
-  };
-  const id = 'response:' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+  const formData = new FormData();
+  formData.append(ENTRY_GENDER, answers.gender || '');
+  formData.append(ENTRY_AGE_RANGE, answers.ageRange || '');
+  formData.append(ENTRY_UNDERSTANDING, answers.understanding || '');
 
   try{
-    await window.storage.set(id, JSON.stringify(entry), true);
+    await fetch(
+      `https://docs.google.com/forms/d/e/${GOOGLE_FORM_ID}/formResponse`,
+      { method: 'POST', mode: 'no-cors', body: formData }
+    );
     showDone();
   }catch(e){
     document.getElementById('errMsg').textContent = 'Something went wrong submitting — please try again.';
