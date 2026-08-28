@@ -27,7 +27,7 @@ def log_entry(cycle_day, presence, heart_rate=None, hrv=None, sleep_quality=None
     print("Logged: cycle_day={}, presence={}".format(cycle_day, presence))
 
 try:
-    ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
+    ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)
     print("Radar connected. Logging every 30s. Ctrl+C to stop.")
     while True:
         data = ser.read(64)

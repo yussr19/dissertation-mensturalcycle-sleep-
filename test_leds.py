@@ -2,7 +2,7 @@ import time
 from rpi_ws281x import PixelStrip, Color
 
 LED_COUNT = 28
-LED_PIN = 18
+LED_PIN = 13
 LED_FREQ_HZ = 800000
 LED_DMA = 10
 LED_BRIGHTNESS = 100

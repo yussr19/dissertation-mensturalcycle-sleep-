@@ -30,7 +30,7 @@ def log_entry(cycle_day, presence, movement):
     print("Logged: presence={}, movement={}".format(presence, movement))
 
 try:
-    ser = serial.Serial('/dev/ttyS0', 256000, timeout=1)
+    ser = serial.Serial('/dev/ttyAMA0', 256000, timeout=1)
     print("Radar connected. Logging every 30s. Ctrl+C to stop.")
     while True:
         data = ser.read(64)

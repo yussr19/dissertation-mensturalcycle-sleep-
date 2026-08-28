@@ -1,7 +1,7 @@
 import serial
 import time
 
-ser = serial.Serial('/dev/ttyS0', 115200, timeout=1)
+ser = serial.Serial('/dev/ttyAMA0', 115200, timeout=1)
 print("Radar test started. Listening for data...")
 
 try:
