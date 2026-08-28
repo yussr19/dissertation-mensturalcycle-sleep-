@@ -2,3 +2,7 @@ sleepenv/
 sleep.db
 __pycache__/
 *.pyc
+
+# Arduino secrets
+config.h
+.DS_Store
