@@ -109,7 +109,7 @@ Subtotal: roughly **£68–73**, excluding filament.
 
 Prices are UK retail including VAT, correct as of August 2026. The Bangle.js
 2 figure comes from Espruino's shop and The Pi Hut; the recording pen from
-Metcheck. Remaining figures are typical hobbyist supplier prices.
+Metcheck. 
 
 ### The pen
 
